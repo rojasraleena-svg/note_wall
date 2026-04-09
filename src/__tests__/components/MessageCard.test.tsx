@@ -117,4 +117,44 @@ describe("MessageCard", () => {
       expect(heartSpan?.className).toContain("animate-like-heartbeat");
     });
   });
+
+  // --- Visual enhancement tests ---
+
+  it("should apply pinned card styling for pinned messages", () => {
+    const pinnedMessage = { ...mockMessage, is_pinned: true };
+    const onLike = vi.fn();
+    const { container } = render(<MessageCard message={pinnedMessage} onLike={onLike} />);
+
+    const card = container.querySelector("[data-testid='message-card']");
+    const cls = card?.getAttribute("class") ?? "";
+    expect(cls).toContain("card-pinned");
+  });
+
+  it("should NOT apply pinned styling for non-pinned messages", () => {
+    const onLike = vi.fn();
+    const { container } = render(<MessageCard message={mockMessage} onLike={onLike} />);
+
+    const card = container.querySelector("[data-testid='message-card']");
+    const cls = card?.getAttribute("class") ?? "";
+    expect(cls).not.toContain("card-pinned");
+  });
+
+  it("should apply popular card styling for messages with many likes", () => {
+    const popularMessage = { ...mockMessage, likes: 15 };
+    const onLike = vi.fn();
+    const { container } = render(<MessageCard message={popularMessage} onLike={onLike} />);
+
+    const card = container.querySelector("[data-testid='message-card']");
+    const cls = card?.getAttribute("class") ?? "";
+    expect(cls).toContain("card-popular");
+  });
+
+  it("should NOT apply popular styling for messages with few likes", () => {
+    const onLike = vi.fn();
+    const { container } = render(<MessageCard message={mockMessage} onLike={onLike} />);
+
+    const card = container.querySelector("[data-testid='message-card']");
+    const cls = card?.getAttribute("class") ?? "";
+    expect(cls).not.toContain("card-popular");
+  });
 });

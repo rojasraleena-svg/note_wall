@@ -9,23 +9,31 @@ vi.mock("@/components/MessageWall", () => ({
 }));
 
 describe("Home Page", () => {
-  it("should render header with title", () => {
+  it("should render main heading '留言墙' in hero section", () => {
     render(<Home />);
-    expect(screen.getByText("留言墙")).toBeInTheDocument();
+    const heading = screen.getByRole("heading", { level: 1 });
+    expect(heading).toHaveTextContent("留言墙");
   });
 
-  it("should have gradient-bg class on main element", () => {
+  it("should render brand logo in hero section", () => {
+    render(<Home />);
+    expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("should have proper main container layout", () => {
     const { container } = render(<Home />);
     const main = container.querySelector("main");
     expect(main).toBeInTheDocument();
     expect(main?.className).toContain("max-w-5xl");
   });
 
-  it("should contain gradient-animate class for dynamic background", () => {
-    const { container } = render(<Home />);
-    // The page renders inside a body with gradient-bg (from layout)
-    // We verify the structure is correct
-    expect(screen.getByText("留言墙")).toBeInTheDocument();
+  it("should contain MessageWall component", () => {
+    render(<Home />);
     expect(screen.getByTestId("message-wall")).toBeInTheDocument();
+  });
+
+  it("should display online status indicator", () => {
+    render(<Home />);
+    expect(screen.getByTestId("online-status")).toBeInTheDocument();
   });
 });

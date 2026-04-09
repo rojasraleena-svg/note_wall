@@ -63,11 +63,23 @@ export default function MessageCard({ message, onLike, index = 0 }: MessageCardP
   };
 
   const animationDelay = `${Math.min(index * 0.05, 0.3)}s`;
+  const isPopular = message.likes >= 10;
+
+  const cardClasses = [
+    "glass-card",
+    "rounded-2xl",
+    "p-5",
+    "animate-fade-in-up",
+    message.is_pinned ? "card-pinned" : "",
+    isPopular ? "card-popular" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div
       ref={cardRef}
-      className="glass-card rounded-2xl p-5 animate-fade-in-up"
+      className={cardClasses}
       style={{ animationDelay, ...tiltStyle }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
