@@ -76,25 +76,34 @@ export default function MessageWall() {
     <div>
       <MessageForm onSubmit={handleSubmit} submitting={submitting} />
 
-      <div className="mt-8">
-        <p className="text-sm text-gray-500 mb-4">
-          共 {total} 条留言
+      <div className="mt-8 flex items-center justify-between">
+        <p className="text-sm text-gray-500 font-medium">
+          共 <span className="gradient-text font-bold">{total}</span> 条留言
         </p>
+      </div>
 
+      <div className="mt-4">
         {loading && page === 1 ? (
-          <div className="text-center py-12 text-gray-400">加载中...</div>
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <div className="w-8 h-8 rounded-full border-2 border-indigo-300 border-t-transparent animate-spin"></div>
+            <p className="text-sm text-gray-400">加载中...</p>
+          </div>
         ) : messages.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            还没有留言，快来留下第一条吧！
+          <div className="text-center py-20">
+            <p className="text-4xl mb-3 animate-float">💌</p>
+            <p className="text-gray-400 text-sm">
+              还没有留言，快来留下第一条吧！
+            </p>
           </div>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {messages.map((msg) => (
+              {messages.map((msg, idx) => (
                 <MessageCard
                   key={msg.id}
                   message={msg}
                   onLike={handleLike}
+                  index={idx}
                 />
               ))}
             </div>
@@ -104,9 +113,16 @@ export default function MessageWall() {
                 <button
                   onClick={() => setPage((prev) => prev + 1)}
                   disabled={loading}
-                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition disabled:opacity-50"
+                  className="glass px-8 py-2.5 text-sm text-gray-600 rounded-full hover:bg-white/40 transition-all disabled:opacity-50"
                 >
-                  {loading ? "加载中..." : "加载更多"}
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full border-2 border-indigo-300 border-t-transparent animate-spin"></span>
+                      加载中...
+                    </span>
+                  ) : (
+                    "加载更多"
+                  )}
                 </button>
               </div>
             )}
