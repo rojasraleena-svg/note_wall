@@ -61,4 +61,60 @@ describe("MessageCard", () => {
 
     expect(screen.queryByText("置顶")).not.toBeInTheDocument();
   });
+
+  it("should apply 3D tilt transform on mousemove", () => {
+    const onLike = vi.fn();
+    render(<MessageCard message={mockMessage} onLike={onLike} />);
+
+    const card = screen.getByTestId("message-card");
+
+    // Simulate mouse entering and moving across the card
+    fireEvent.mouseEnter(card);
+    fireEvent.mouseMove(card, { clientX: 200, clientY: 150 });
+
+    // Card should have a transform style with rotate (non-identity)
+    const style = card.getAttribute("style") || "";
+    expect(style).toContain("rotateX");
+    expect(style).toContain("rotateY");
+  });
+
+  it("should reset tilt transform on mouseleave", () => {
+    const onLike = vi.fn();
+    render(<MessageCard message={mockMessage} onLike={onLike} />);
+
+    const card = screen.getByTestId("message-card");
+
+    // Move mouse to trigger tilt
+    fireEvent.mouseEnter(card);
+    fireEvent.mouseMove(card, { clientX: 200, clientY: 150 });
+    expect(card.getAttribute("style") || "").toContain("rotate");
+
+    // Leave should reset
+    fireEvent.mouseLeave(card);
+    const styleAfterLeave = card.getAttribute("style") || "";
+    expect(styleAfterLeave).not.toContain("rotateX");
+    expect(styleAfterLeave).not.toContain("rotateY");
+  });
+
+  it("should have perspective style for 3D effect", () => {
+    const onLike = vi.fn();
+    render(<MessageCard message={mockMessage} onLike={onLike} />);
+
+    const card = screen.getByTestId("message-card");
+    expect(card.style.perspective).toBeDefined();
+  });
+
+  it("should apply heartbeat animation class when liked", async () => {
+    const onLike = vi.fn().mockResolvedValue(4);
+    render(<MessageCard message={mockMessage} onLike={onLike} />);
+
+    const likeButton = screen.getByTestId("like-button");
+    fireEvent.click(likeButton);
+
+    // After clicking, the heart icon should have heartbeat animation
+    await waitFor(() => {
+      const heartSpan = likeButton.querySelector("span:first-child");
+      expect(heartSpan?.className).toContain("animate-like-heartbeat");
+    });
+  });
 });

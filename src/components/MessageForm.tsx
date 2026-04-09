@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { useRipple } from "@/hooks/useRipple";
 
 interface MessageFormProps {
   onSubmit: (nickname: string, content: string) => Promise<void>;
@@ -12,6 +13,8 @@ export default function MessageForm({ onSubmit, submitting }: MessageFormProps) 
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
   const [expanded, setExpanded] = useState(false);
+  const [textareaFocused, setTextareaFocused] = useState(false);
+  const { ref: submitRef, onClick: onRipple } = useRipple();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -76,8 +79,12 @@ export default function MessageForm({ onSubmit, submitting }: MessageFormProps) 
             placeholder="说点什么吧..."
             maxLength={500}
             rows={3}
-            className="w-full px-0 py-2 border-0 border-b border-gray-200/50 bg-transparent focus:outline-none focus:border-indigo-300 text-sm text-gray-700 placeholder-gray-300 resize-none leading-relaxed"
+            className={`w-full px-0 py-2 border-0 border-b border-gray-200/50 bg-transparent focus:outline-none text-sm text-gray-700 placeholder-gray-300 resize-none leading-relaxed ${
+              textareaFocused ? "focus-shine" : ""
+            }`}
             data-testid="content-input"
+            onFocus={() => setTextareaFocused(true)}
+            onBlur={() => setTextareaFocused(false)}
           />
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center gap-3">
@@ -104,9 +111,11 @@ export default function MessageForm({ onSubmit, submitting }: MessageFormProps) 
               </button>
               <button
                 type="submit"
+                ref={submitRef}
                 disabled={submitting || !content.trim()}
-                className="btn-gradient px-5 py-2 text-white text-xs font-medium rounded-full disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none"
+                className="btn-gradient px-5 py-2 text-white text-xs font-medium rounded-full disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden"
                 data-testid="submit-button"
+                onClick={onRipple}
               >
                 {submitting ? "发布中..." : "发布 ✨"}
               </button>

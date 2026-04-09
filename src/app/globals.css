@@ -50,6 +50,15 @@
   }
 }
 
+@keyframes like-heartbeat {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.4); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.2); }
+  60% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
 .animate-fade-in-up {
   animation: fade-in-up 0.5s ease-out forwards;
 }
@@ -70,6 +79,45 @@
 
 .animate-pulse-soft {
   animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-like-heartbeat {
+  animation: like-heartbeat 0.6s ease-in-out;
+  display: inline-block;
+}
+
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(0);
+  animation: ripple-expand 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes ripple-expand {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes border-shine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.focus-shine {
+  border-image: linear-gradient(
+    90deg,
+    var(--color-gradient-start),
+    var(--color-gradient-mid),
+    var(--color-gradient-end),
+    var(--color-gradient-mid),
+    var(--color-gradient-start)
+  ) 1;
+  animation: border-shine 3s linear infinite;
+  border-bottom-width: 2px;
 }
 
 .glass {
@@ -106,7 +154,17 @@
 
 .gradient-bg {
   background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 25%, #fce7f3 50%, #e0f2fe 75%, #dbeafe 100%);
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
   min-height: 100vh;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+  100% { background-position: 0% 50%; }
 }
 
 .gradient-text {

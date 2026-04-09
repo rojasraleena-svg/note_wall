@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Message } from "@/types/message";
 
 interface MessageCardProps {
@@ -16,11 +16,38 @@ export default function MessageCard({ message, onLike, index = 0 }: MessageCardP
     }
     return false;
   });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [tiltStyle, setTiltStyle] = useState<React.CSSProperties>({});
+  const [heartbeat, setHeartbeat] = useState(false);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -10;
+    const rotateY = ((x - centerX) / centerX) * 10;
+
+    setTiltStyle({
+      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`,
+    });
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setTiltStyle({});
+  }, []);
 
   const handleLike = () => {
     if (liked) return;
     setLiked(true);
+    setHeartbeat(true);
     onLike(message.id);
+    setTimeout(() => setHeartbeat(false), 600);
   };
 
   const avatarUrl = `https://api.dicebear.com/7.x/thumbs/svg?seed=${message.avatar_seed}`;
@@ -39,8 +66,11 @@ export default function MessageCard({ message, onLike, index = 0 }: MessageCardP
 
   return (
     <div
+      ref={cardRef}
       className="glass-card rounded-2xl p-5 animate-fade-in-up"
-      style={{ animationDelay }}
+      style={{ animationDelay, ...tiltStyle }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       data-testid="message-card"
     >
       <div className="flex items-center gap-3 mb-3">
@@ -84,7 +114,7 @@ export default function MessageCard({ message, onLike, index = 0 }: MessageCardP
           }`}
           data-testid="like-button"
         >
-          <span className="text-base">{liked ? "❤️" : "🤍"}</span>
+          <span className={`text-base ${heartbeat ? "animate-like-heartbeat" : ""}`}>{liked ? "❤️" : "🤍"}</span>
           <span className="text-xs font-medium" data-testid="like-count">
             {message.likes}
           </span>

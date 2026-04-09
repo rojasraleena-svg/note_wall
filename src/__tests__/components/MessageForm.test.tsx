@@ -96,4 +96,49 @@ describe("MessageForm", () => {
 
     expect(screen.getByText("写下你的留言...")).toBeInTheDocument();
   });
+
+  it("should create ripple effect on submit button click", async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    render(<MessageForm onSubmit={onSubmit} submitting={false} />);
+
+    fireEvent.click(screen.getByText("写下你的留言..."));
+
+    const contentInput = screen.getByTestId("content-input");
+    fireEvent.change(contentInput, { target: { value: "测试留言" } });
+
+    const submitButton = screen.getByTestId("submit-button");
+    fireEvent.click(submitButton);
+
+    // Ripple element should appear inside the button
+    await waitFor(() => {
+      const ripple = submitButton.querySelector(".ripple-effect");
+      expect(ripple).toBeInTheDocument();
+    });
+  });
+
+  it("should apply focus-shine class when textarea is focused", () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    render(<MessageForm onSubmit={onSubmit} submitting={false} />);
+
+    fireEvent.click(screen.getByText("写下你的留言..."));
+
+    const textarea = screen.getByTestId("content-input");
+    fireEvent.focus(textarea);
+
+    expect(textarea.className).toContain("focus-shine");
+  });
+
+  it("should remove focus-shine class when textarea is blurred", () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    render(<MessageForm onSubmit={onSubmit} submitting={false} />);
+
+    fireEvent.click(screen.getByText("写下你的留言..."));
+
+    const textarea = screen.getByTestId("content-input");
+    fireEvent.focus(textarea);
+    expect(textarea.className).toContain("focus-shine");
+
+    fireEvent.blur(textarea);
+    expect(textarea.className).not.toContain("focus-shine");
+  });
 });
