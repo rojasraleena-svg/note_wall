@@ -64,5 +64,7 @@ export async function incrementLikes(messageId: string): Promise<number> {
   });
 
   if (error) throw error;
-  return data as number;
+  // Supabase v2 wraps scalar RPC returns in arrays, e.g., [1]
+  const raw = data as number | number[];
+  return Array.isArray(raw) ? raw[0] : raw;
 }

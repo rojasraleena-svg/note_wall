@@ -191,5 +191,23 @@ describe("messageService", () => {
       const { incrementLikes } = await import("@/services/messageService");
       await expect(incrementLikes("msg-1")).rejects.toThrow("RPC error");
     });
+
+    it("should unwrap array-wrapped scalar response from Supabase RPC", async () => {
+      // Supabase v2 rpc() wraps scalar returns in arrays: { data: [7] }
+      mockRpc.mockResolvedValue({ data: [7], error: null });
+
+      const { incrementLikes } = await import("@/services/messageService");
+      const result = await incrementLikes("msg-1");
+      expect(result).toBe(7);
+    });
+
+    it("should handle plain number response (non-array)", async () => {
+      // Some Supabase versions may return plain numbers
+      mockRpc.mockResolvedValue({ data: 8, error: null });
+
+      const { incrementLikes } = await import("@/services/messageService");
+      const result = await incrementLikes("msg-1");
+      expect(result).toBe(8);
+    });
   });
 });

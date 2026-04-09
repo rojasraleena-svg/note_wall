@@ -33,3 +33,5 @@ BEGIN
   RETURN new_likes;
 END;
 $$;
+
+GRANT EXECUTE ON FUNCTION increment_likes(UUID) TO anon;
