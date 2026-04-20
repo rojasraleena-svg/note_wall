@@ -3,13 +3,16 @@
 /.pnp
 .pnp.*
 .yarn/install-state.gz
-
+PROFILE*
 # testing
 /coverage
 
 # next.js
 /.next/
 /out/
+.npm-temp-cache/
+.next-dev.log
+.playwright-cli/
 
 # production
 /build
@@ -38,4 +41,4 @@ supabase/.temp/
 next-env.d.ts
 
 # profile
-PROFILE
+PROFILE*

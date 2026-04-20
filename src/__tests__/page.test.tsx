@@ -24,7 +24,7 @@ describe("Home Page", () => {
     const { container } = render(<Home />);
     const main = container.querySelector("main");
     expect(main).toBeInTheDocument();
-    expect(main?.className).toContain("max-w-5xl");
+    expect(main?.className).toContain("page-shell");
   });
 
   it("should contain MessageWall component", () => {

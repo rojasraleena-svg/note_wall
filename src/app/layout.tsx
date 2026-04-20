@@ -1,9 +1,21 @@
 import type { Metadata } from "next";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-display",
+});
+
 export const metadata: Metadata = {
-  title: "留言墙 - Note Wall",
-  description: "一个轻量级的在线留言墙，留下你的想法，与大家分享",
+  title: "留言墙 | Note Wall",
+  description: "把一闪而过的念头，留在一面会发光的公开墙上。",
 };
 
 export default function RootLayout({
@@ -13,7 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body className="gradient-bg antialiased">{children}</body>
+      <body
+        className={`${manrope.variable} ${cormorant.variable} app-shell antialiased`}
+      >
+        {children}
+      </body>
     </html>
   );
 }

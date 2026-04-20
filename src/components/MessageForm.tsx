@@ -8,7 +8,10 @@ interface MessageFormProps {
   submitting: boolean;
 }
 
-export default function MessageForm({ onSubmit, submitting }: MessageFormProps) {
+export default function MessageForm({
+  onSubmit,
+  submitting,
+}: MessageFormProps) {
   const [nickname, setNickname] = useState("");
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
@@ -26,7 +29,7 @@ export default function MessageForm({ onSubmit, submitting }: MessageFormProps) 
       return;
     }
     if (trimmedContent.length > 500) {
-      setError("留言内容不能超过500字");
+      setError("留言内容不能超过 500 字");
       return;
     }
 
@@ -36,93 +39,111 @@ export default function MessageForm({ onSubmit, submitting }: MessageFormProps) 
       setExpanded(false);
       setError("");
     } catch {
-      setError("发布失败，请稍后重试");
+      setError("发布失败，请稍后再试");
     }
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="glass-strong rounded-2xl p-6 transition-all duration-300"
+      className="note-form"
       data-testid="message-form"
     >
-      <div
-        className="flex items-center gap-3 cursor-pointer"
-        onClick={() => !expanded && setExpanded(true)}
-      >
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white text-sm font-bold shrink-0">
-          {nickname.trim() ? nickname.trim()[0].toUpperCase() : "💡"}
+      <div className="note-form-shell rounded-[1.8rem] p-5 transition-all duration-300">
+        <div
+          className="flex cursor-pointer items-center gap-3"
+          onClick={() => !expanded && setExpanded(true)}
+        >
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[rgba(19,17,15,0.08)] bg-[rgba(19,17,15,0.04)] text-sm font-semibold text-[var(--color-ink)]">
+            {nickname.trim() ? nickname.trim()[0].toUpperCase() : "留"}
+          </div>
+          {!expanded ? (
+            <div className="flex-1">
+              <p className="text-sm font-medium text-[var(--color-ink)]">
+                写下今天想留下的话
+              </p>
+              <p className="mt-1 text-sm text-[var(--color-soft)]">
+                点击展开，匿名或署名都可以。
+              </p>
+            </div>
+          ) : (
+            <div className="flex-1 border-b border-[var(--color-line)] pb-2">
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="署名（可选）"
+                maxLength={50}
+                className="note-input text-sm"
+                data-testid="nickname-input"
+                autoFocus
+              />
+            </div>
+          )}
         </div>
-        {!expanded ? (
-          <p className="text-gray-400 text-sm flex-1">写下你的留言...</p>
-        ) : (
-          <div className="flex-1">
-            <input
-              type="text"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder="昵称（选填）"
-              maxLength={50}
-              className="w-full px-0 py-1 border-0 border-b border-gray-200/50 bg-transparent focus:outline-none focus:border-indigo-300 text-sm text-gray-700 placeholder-gray-300"
-              data-testid="nickname-input"
-              autoFocus
+
+        {expanded && (
+          <div className="mt-5 animate-fade-in-up">
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="写点什么吧，比如今天的心情、一个路过的念头，或者一句想留给陌生人的话。"
+              maxLength={500}
+              rows={5}
+              className={`note-textarea rounded-[1.4rem] border border-[rgba(19,17,15,0.08)] px-4 py-4 text-sm leading-7 ${
+                textareaFocused ? "focus-shine" : ""
+              }`}
+              data-testid="content-input"
+              onFocus={() => setTextareaFocused(true)}
+              onBlur={() => setTextareaFocused(false)}
             />
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span
+                  className={`text-xs ${
+                    content.length > 450
+                      ? "text-[var(--color-accent)]"
+                      : "text-[var(--color-soft)]"
+                  }`}
+                >
+                  {content.length}/500
+                </span>
+                {error && (
+                  <span
+                    className="text-xs text-[var(--color-accent)]"
+                    data-testid="form-error"
+                  >
+                    {error}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExpanded(false);
+                    setContent("");
+                    setError("");
+                  }}
+                  className="secondary-button rounded-full px-4 py-2 text-xs transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  type="submit"
+                  ref={submitRef}
+                  disabled={submitting || !content.trim()}
+                  className="editorial-button rounded-full px-5 py-2 text-xs font-semibold"
+                  data-testid="submit-button"
+                  onClick={onRipple}
+                >
+                  {submitting ? "发布中..." : "发布留言"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
-
-      {expanded && (
-        <div className="mt-4 animate-fade-in-up">
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="说点什么吧..."
-            maxLength={500}
-            rows={3}
-            className={`w-full px-0 py-2 border-0 border-b border-gray-200/50 bg-transparent focus:outline-none text-sm text-gray-700 placeholder-gray-300 resize-none leading-relaxed ${
-              textareaFocused ? "focus-shine" : ""
-            }`}
-            data-testid="content-input"
-            onFocus={() => setTextareaFocused(true)}
-            onBlur={() => setTextareaFocused(false)}
-          />
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center gap-3">
-              <span className={`text-xs ${content.length > 450 ? "text-amber-500" : "text-gray-300"}`}>
-                {content.length}/500
-              </span>
-              {error && (
-                <span className="text-xs text-red-400" data-testid="form-error">
-                  {error}
-                </span>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setExpanded(false);
-                  setContent("");
-                  setError("");
-                }}
-                className="px-4 py-2 text-xs text-gray-400 hover:text-gray-600 rounded-lg hover:bg-white/30 transition-colors"
-              >
-                取消
-              </button>
-              <button
-                type="submit"
-                ref={submitRef}
-                disabled={submitting || !content.trim()}
-                className="btn-gradient px-5 py-2 text-white text-xs font-medium rounded-full disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden"
-                data-testid="submit-button"
-                onClick={onRipple}
-              >
-                {submitting ? "发布中..." : "发布 ✨"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </form>
   );
 }

@@ -147,7 +147,7 @@ describe("messageService", () => {
       const { createMessage } = await import("@/services/messageService");
       const longContent = "a".repeat(501);
       await expect(createMessage({ content: longContent })).rejects.toThrow(
-        "留言内容不能超过500字"
+        "留言内容不能超过 500 字"
       );
     });
 
@@ -164,9 +164,9 @@ describe("messageService", () => {
       });
 
       const { createMessage } = await import("@/services/messageService");
-      await expect(
-        createMessage({ content: "测试" })
-      ).rejects.toThrow("Insert failed");
+      await expect(createMessage({ content: "测试" })).rejects.toThrow(
+        "Insert failed"
+      );
     });
   });
 
@@ -193,7 +193,6 @@ describe("messageService", () => {
     });
 
     it("should unwrap array-wrapped scalar response from Supabase RPC", async () => {
-      // Supabase v2 rpc() wraps scalar returns in arrays: { data: [7] }
       mockRpc.mockResolvedValue({ data: [7], error: null });
 
       const { incrementLikes } = await import("@/services/messageService");
@@ -202,7 +201,6 @@ describe("messageService", () => {
     });
 
     it("should handle plain number response (non-array)", async () => {
-      // Some Supabase versions may return plain numbers
       mockRpc.mockResolvedValue({ data: 8, error: null });
 
       const { incrementLikes } = await import("@/services/messageService");

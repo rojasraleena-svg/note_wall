@@ -24,21 +24,18 @@ describe("HeroHeader", () => {
     render(<HeroHeader />);
     const statusBadge = screen.getByTestId("online-status");
     expect(statusBadge).toBeInTheDocument();
-    expect(statusBadge).toHaveTextContent(/在线/);
+    expect(statusBadge).toHaveTextContent(/online/i);
   });
 
   it("should have decorative background elements", () => {
     const { container } = render(<HeroHeader />);
-    // Should have at least one decorative element
     const decoratives = container.querySelectorAll("[data-testid^='hero-decor']");
     expect(decoratives.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("should apply glass morphism styling to the hero card", () => {
+  it("should render the hero frame container", () => {
     const { container } = render(<HeroHeader />);
-    const heroCard = container.querySelector(".glass");
+    const heroCard = container.querySelector(".hero-frame");
     expect(heroCard).toBeInTheDocument();
-    const cls = heroCard?.getAttribute("class") ?? "";
-    expect(cls).toMatch(/glass|rounded/);
   });
 });

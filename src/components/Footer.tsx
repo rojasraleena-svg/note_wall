@@ -4,39 +4,36 @@ export default function Footer() {
   return (
     <footer
       data-testid="site-footer"
-      className="text-center mt-16 mb-8 animate-fade-in-up-delay-2"
+      className="section-shell mt-10 pb-10 animate-fade-in-up-delay-2"
     >
-      {/* Decorative separator */}
       <div
         data-testid="footer-decor"
-        className="flex items-center justify-center gap-4 mb-8"
+        className="mb-8 flex items-center justify-center gap-4"
       >
-        <span className="h-px w-16 bg-gradient-to-r from-transparent to-gray-200/60" />
+        <span className="h-px w-16 bg-[linear-gradient(to_right,transparent,rgba(19,17,15,0.16))]" />
         <BrandLogo size={24} />
-        <span className="h-px w-16 bg-gradient-to-l from-transparent to-gray-200/60" />
+        <span className="h-px w-16 bg-[linear-gradient(to_left,transparent,rgba(19,17,15,0.16))]" />
       </div>
 
-      {/* Brand row */}
-      <div className="flex items-center justify-center gap-2 mb-3">
+      <div className="mb-3 flex items-center justify-center gap-2">
         <BrandLogo size={20} />
-        <span className="text-sm font-medium gradient-text">留言墙</span>
+        <span className="text-sm font-medium">留言墙</span>
       </div>
 
-      {/* Tech stack + link */}
-      <p className="text-xs text-gray-400 space-x-1.5">
+      <p className="space-x-1.5 text-center text-xs text-[var(--color-soft)]">
         <span>Built with</span>
-        <span className="text-gray-500 font-medium">Next.js</span>
+        <span className="font-medium text-[var(--color-muted)]">Next.js</span>
         <span>+</span>
-        <span className="text-gray-500 font-medium">Supabase</span>
-        <span className="mx-1 text-gray-300">·</span>
+        <span className="font-medium text-[var(--color-muted)]">Supabase</span>
+        <span className="mx-1 text-[rgba(19,17,15,0.24)]">/</span>
         <a
           href="https://github.com/rojasraleena-svg/note_wall"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 hover:text-gray-600 transition-colors"
+          className="inline-flex items-center gap-1 transition-colors hover:text-[var(--color-ink)]"
         >
           <svg
-            className="w-3.5 h-3.5"
+            className="h-3.5 w-3.5"
             viewBox="0 0 16 16"
             fill="currentColor"
             aria-hidden="true"

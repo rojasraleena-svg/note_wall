@@ -41,7 +41,7 @@ export async function createMessage(
     throw new Error("留言内容不能为空");
   }
   if (content.length > 500) {
-    throw new Error("留言内容不能超过500字");
+    throw new Error("留言内容不能超过 500 字");
   }
 
   const { data, error } = await supabase
@@ -64,7 +64,6 @@ export async function incrementLikes(messageId: string): Promise<number> {
   });
 
   if (error) throw error;
-  // Supabase v2 wraps scalar RPC returns in arrays, e.g., [1]
   const raw = data as number | number[];
   return Array.isArray(raw) ? raw[0] : raw;
 }

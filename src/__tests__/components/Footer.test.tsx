@@ -19,7 +19,10 @@ describe("Footer", () => {
   it("should show GitHub link", () => {
     render(<Footer />);
     const githubLink = screen.getByRole("link", { name: /github/i });
-    expect(githubLink).toHaveAttribute("href", "https://github.com/rojasraleena-svg/note_wall");
+    expect(githubLink).toHaveAttribute(
+      "href",
+      "https://github.com/rojasraleena-svg/note_wall"
+    );
     expect(githubLink).toHaveAttribute("target", "_blank");
     expect(githubLink).toHaveAttribute("rel", "noopener noreferrer");
   });
@@ -32,7 +35,6 @@ describe("Footer", () => {
 
   it("should have decorative separator or visual element", () => {
     const { container } = render(<Footer />);
-    // Should have some decorative element
     const decor = container.querySelector("[data-testid='footer-decor']");
     expect(decor).toBeInTheDocument();
   });
