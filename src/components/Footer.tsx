@@ -8,17 +8,14 @@ export default function Footer() {
     >
       <div
         data-testid="footer-decor"
-        className="mb-8 flex items-center justify-center gap-4"
+        className="mb-6 flex items-center justify-center gap-4"
       >
         <span className="h-px w-16 bg-[linear-gradient(to_right,transparent,rgba(19,17,15,0.16))]" />
         <BrandLogo size={24} />
         <span className="h-px w-16 bg-[linear-gradient(to_left,transparent,rgba(19,17,15,0.16))]" />
       </div>
 
-      <div className="mb-3 flex items-center justify-center gap-2">
-        <BrandLogo size={20} />
-        <span className="text-sm font-medium">留言墙</span>
-      </div>
+      <div className="mb-3 text-center text-sm font-medium">留言墙</div>
 
       <p className="space-x-1.5 text-center text-xs text-[var(--color-soft)]">
         <span>Built with</span>

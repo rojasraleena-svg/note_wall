@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Message } from "@/types/message";
 import {
-  fetchMessages,
   createMessage,
+  fetchMessages,
   incrementLikes,
 } from "@/services/messageService";
 import MessageCard from "./MessageCard";
@@ -79,35 +79,25 @@ export default function MessageWall() {
   };
 
   const hasMore = messages.length < total;
-  const pinnedCount = messages.filter((message) => message.is_pinned).length;
   const highlightedLikes = messages.reduce(
     (max, message) => Math.max(max, message.likes),
     0
   );
 
   return (
-    <section className="notes-layout">
-      <aside>
-        <div className="notes-panel rounded-[2rem]">
-          <div className="eyebrow">Write / archive / revisit</div>
-          <h2 className="mt-3 text-[clamp(2rem,4vw,3.8rem)] leading-[0.95] tracking-[-0.06em] display-font">
-            像编辑墙一样，把内容排成能被重新看见的版面。
-          </h2>
-          <p className="section-copy mt-4">
-            这里不再是普通卡片列表，而更像一个不断更新的公共展板。每条留言保留它自己的呼吸感，
-            你写下的内容会先被看见，再被阅读。
-          </p>
+    <section className="notes-layout" id="notes-wall" data-testid="notes-wall">
+      <aside className="notes-rail">
+        <div className="notes-panel rounded-[1.75rem]">
+          <div className="eyebrow">Leave a note</div>
+          <h2 className="notes-title display-font">写一句，留一句。</h2>
+          <p className="section-copy">把一句心情留在这里。</p>
 
-          <div className="stats-grid">
-            <div className="stat-box">
+          <div className="stats-strip">
+            <div className="stat-chip">
               <strong>{total}</strong>
               <span>公开留言</span>
             </div>
-            <div className="stat-box">
-              <strong>{pinnedCount}</strong>
-              <span>置顶内容</span>
-            </div>
-            <div className="stat-box">
+            <div className="stat-chip">
               <strong>{highlightedLikes}</strong>
               <span>最高点赞</span>
             </div>
@@ -123,19 +113,12 @@ export default function MessageWall() {
         </div>
       </aside>
 
-      <div className="feed-panel rounded-[2rem]">
+      <div className="feed-stage">
         <div className="feed-head">
           <div>
-            <div className="feed-kicker">Public wall</div>
-            <h3 className="feed-title display-font">Latest notes</h3>
-            <p className="feed-subtitle">
-              置顶内容会先出现，后面的留言按时间倒序排布。滚动时你看到的不是一组卡片，
-              而是一面持续更新的纸质墙。
-            </p>
-          </div>
-          <div className="feed-count">
-            <span className="feed-kicker">Entries now</span>
-            <strong>{total}</strong>
+            <div className="feed-kicker">Archive</div>
+            <h3 className="feed-title display-font">最新留言</h3>
+            <p className="feed-subtitle">置顶在前，其余按时间展开。</p>
           </div>
         </div>
 
@@ -143,7 +126,7 @@ export default function MessageWall() {
           <div className="loading-state">
             <div className="loading-spinner" />
             <p className="text-sm text-[var(--color-soft)]">
-              正在从数据库整理最新留言...
+              正在整理最新留言...
             </p>
           </div>
         ) : loadError ? (
@@ -160,14 +143,14 @@ export default function MessageWall() {
           </div>
         ) : messages.length === 0 ? (
           <div className="empty-state">
-            <p className="text-4xl display-font">First note wanted</p>
+            <p className="text-4xl display-font">还没有留言</p>
             <p className="mt-3 text-sm text-[var(--color-soft)]">
-              这里还没有内容。把第一条留言贴上去，让这面墙真正开始发声。
+              把第一条贴上来，让这面墙开始说话。
             </p>
           </div>
         ) : (
           <>
-            <div className="feed-columns">
+            <div className="feed-grid">
               {messages.map((msg, idx) => (
                 <MessageCard
                   key={msg.id}
@@ -191,7 +174,7 @@ export default function MessageWall() {
                       加载中...
                     </span>
                   ) : (
-                    "继续加载更多"
+                    "继续查看更多"
                   )}
                 </button>
               </div>

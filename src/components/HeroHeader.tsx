@@ -1,6 +1,94 @@
+"use client";
+
+import { useCallback, useEffect, useRef } from "react";
 import BrandLogo from "./BrandLogo";
 
+const NOTES_SECTION_ID = "notes-wall";
+
+const HERO_NOTES = [
+  {
+    label: "Open line",
+    content: "像被留下的纸条，不像弹窗。",
+    className: "left-[10%] top-[14%] rotate-[-6deg]",
+    animationDelay: "0.2s",
+  },
+  {
+    label: "Passing thought",
+    content: "今天路过，也能在这里停一下。",
+    className: "right-[10%] top-[30%] rotate-[5deg]",
+    animationDelay: "0.7s",
+  },
+  {
+    label: "Open archive",
+    content: "短句、小事、情绪，都值得被放进页面。",
+    className: "left-[18%] bottom-[22%] rotate-[3deg]",
+    animationDelay: "1.1s",
+  },
+  {
+    label: "Public archive",
+    content: "匿名、署名、碎念，都能被看见。",
+    className: "right-[0%] bottom-[12%] rotate-[-4deg]",
+    animationDelay: "1.5s",
+  },
+];
+
 export default function HeroHeader() {
+  const hasEnteredRef = useRef(false);
+
+  const scrollToNotes = useCallback(() => {
+    if (hasEnteredRef.current) return;
+
+    const notesSection = document.getElementById(NOTES_SECTION_ID);
+    if (!notesSection) return;
+
+    hasEnteredRef.current = true;
+    notesSection.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+
+  useEffect(() => {
+    const prefersReducedMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
+    const shouldHandle = () => {
+      const notesSection = document.getElementById(NOTES_SECTION_ID);
+      if (!notesSection) return false;
+      return notesSection.getBoundingClientRect().top > 120;
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (event.deltaY <= 8 || !shouldHandle()) return;
+      scrollToNotes();
+    };
+
+    const onTouchMove = () => {
+      if (!shouldHandle()) return;
+      scrollToNotes();
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!["ArrowDown", "PageDown", "Space", "Enter"].includes(event.code)) {
+        return;
+      }
+      if (!shouldHandle()) return;
+      scrollToNotes();
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [scrollToNotes]);
+
   return (
     <header
       data-testid="hero-container"
@@ -30,9 +118,6 @@ export default function HeroHeader() {
                 <BrandLogo size={54} />
                 <div>
                   <div className="eyebrow">Live note archive</div>
-                  <div className="text-sm text-[var(--color-muted)]">
-                    A quiet public wall for passing thoughts
-                  </div>
                 </div>
               </div>
 
@@ -43,12 +128,23 @@ export default function HeroHeader() {
 
               <h1 className="hero-title display-font">留言墙</h1>
               <p className="hero-manifesto display-font">
-                把一句短暂的话，做成会被重新遇见的公开收藏。
+                <span>把一句短暂的话，</span>
+                <span>做成会被重新看见的公开收藏。</span>
               </p>
               <p data-testid="hero-subtitle" className="hero-summary">
-                参考获奖站常见的海报感首屏与编辑部式排版，我们把这里做成一块更有气氛的留白墙:
-                少一点组件感，多一点节奏、层次和记忆点。
+                先停一下，再进入留言本身。
               </p>
+
+              <div className="hero-actions">
+                <button
+                  type="button"
+                  className="editorial-button rounded-full px-5 py-2.5 text-sm font-semibold"
+                  onClick={scrollToNotes}
+                  data-testid="enter-notes-button"
+                >
+                  进入留言墙
+                </button>
+              </div>
             </div>
 
             <div className="hero-meta">
@@ -58,38 +154,23 @@ export default function HeroHeader() {
               </div>
               <div>
                 <span className="hero-meta-label">Palette</span>
-                <span className="hero-meta-value">Paper / Ink / Ember</span>
-              </div>
-              <div>
-                <span className="hero-meta-label">Energy</span>
-                <span className="hero-meta-value">Editorial Calm</span>
+                <span className="hero-meta-value">Paper / Ink</span>
               </div>
             </div>
           </div>
 
           <div className="hero-side">
             <div className="hero-stage">
-              <div
-                className="hero-note left-[8%] top-[10%] rotate-[-6deg]"
-                style={{ animationDelay: "0.2s" }}
-              >
-                <small>Open line</small>
-                <p>愿这里留下的每句话，都不像弹窗，而像被拾起的纸条。</p>
-              </div>
-              <div
-                className="hero-note right-[4%] top-[34%] rotate-[5deg]"
-                style={{ animationDelay: "0.8s" }}
-              >
-                <small>Quiet motion</small>
-                <p>一眼先看到气氛，再慢慢读见内容，这才像一张真正的首屏海报。</p>
-              </div>
-              <div
-                className="hero-note bottom-[12%] left-[14%] rotate-[-3deg]"
-                style={{ animationDelay: "1.2s" }}
-              >
-                <small>Public archive</small>
-                <p>匿名、署名、心情、碎念，都能在这里拥有一小块被看见的位置。</p>
-              </div>
+              {HERO_NOTES.map((note) => (
+                <div
+                  key={note.label}
+                  className={`hero-note ${note.className}`}
+                  style={{ animationDelay: note.animationDelay }}
+                >
+                  <small>{note.label}</small>
+                  <p>{note.content}</p>
+                </div>
+              ))}
 
               <div className="hero-marquee">
                 <span className="hero-marquee-dot" />

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import MessageCard from "@/components/MessageCard";
 import { Message } from "@/types/message";
 
@@ -27,8 +27,7 @@ describe("MessageCard", () => {
     const onLike = vi.fn();
     render(<MessageCard message={mockMessage} onLike={onLike} />);
 
-    const likeButton = screen.getByTestId("like-button");
-    fireEvent.click(likeButton);
+    fireEvent.click(screen.getByTestId("like-button"));
 
     expect(onLike).toHaveBeenCalledWith("test-1");
   });
@@ -39,18 +38,34 @@ describe("MessageCard", () => {
 
     render(<MessageCard message={mockMessage} onLike={onLike} />);
 
-    const likeButton = screen.getByTestId("like-button");
-    fireEvent.click(likeButton);
+    fireEvent.click(screen.getByTestId("like-button"));
 
     expect(onLike).not.toHaveBeenCalled();
-
     localStorage.removeItem("liked_test-1");
   });
 
-  it("should show pinned badge when message is pinned", () => {
-    const pinnedMessage = { ...mockMessage, is_pinned: true };
+  it("should clear stale like state when stored like exists but count is zero", async () => {
     const onLike = vi.fn();
-    render(<MessageCard message={pinnedMessage} onLike={onLike} />);
+    localStorage.setItem("liked_test-1", "true");
+
+    render(
+      <MessageCard message={{ ...mockMessage, likes: 0 }} onLike={onLike} />
+    );
+
+    await waitFor(() => {
+      expect(localStorage.getItem("liked_test-1")).toBeNull();
+      expect(screen.getByLabelText("点赞")).toBeEnabled();
+    });
+  });
+
+  it("should show pinned badge when message is pinned", () => {
+    const onLike = vi.fn();
+    render(
+      <MessageCard
+        message={{ ...mockMessage, is_pinned: true }}
+        onLike={onLike}
+      />
+    );
 
     expect(screen.getByText("置顶")).toBeInTheDocument();
   });
@@ -62,46 +77,15 @@ describe("MessageCard", () => {
     expect(screen.queryByText("置顶")).not.toBeInTheDocument();
   });
 
-  it("should apply 3D tilt transform on mousemove", () => {
+  it("should render note card element", () => {
     const onLike = vi.fn();
     render(<MessageCard message={mockMessage} onLike={onLike} />);
 
-    const card = screen.getByTestId("message-card");
-
-    fireEvent.mouseEnter(card);
-    fireEvent.mouseMove(card, { clientX: 200, clientY: 150 });
-
-    const style = card.getAttribute("style") || "";
-    expect(style).toContain("rotateX");
-    expect(style).toContain("rotateY");
-  });
-
-  it("should reset tilt transform on mouseleave", () => {
-    const onLike = vi.fn();
-    render(<MessageCard message={mockMessage} onLike={onLike} />);
-
-    const card = screen.getByTestId("message-card");
-
-    fireEvent.mouseEnter(card);
-    fireEvent.mouseMove(card, { clientX: 200, clientY: 150 });
-    expect(card.getAttribute("style") || "").toContain("rotate");
-
-    fireEvent.mouseLeave(card);
-    const styleAfterLeave = card.getAttribute("style") || "";
-    expect(styleAfterLeave).not.toContain("rotateX");
-    expect(styleAfterLeave).not.toContain("rotateY");
-  });
-
-  it("should have perspective style available for 3D effect", () => {
-    const onLike = vi.fn();
-    render(<MessageCard message={mockMessage} onLike={onLike} />);
-
-    const card = screen.getByTestId("message-card");
-    expect(card).toBeInTheDocument();
+    expect(screen.getByTestId("message-card")).toBeInTheDocument();
   });
 
   it("should apply heartbeat animation class when liked", async () => {
-    const onLike = vi.fn().mockResolvedValue(4);
+    const onLike = vi.fn();
     render(<MessageCard message={mockMessage} onLike={onLike} />);
 
     const likeButton = screen.getByTestId("like-button");
@@ -114,45 +98,36 @@ describe("MessageCard", () => {
   });
 
   it("should apply pinned card styling for pinned messages", () => {
-    const pinnedMessage = { ...mockMessage, is_pinned: true };
     const onLike = vi.fn();
     const { container } = render(
-      <MessageCard message={pinnedMessage} onLike={onLike} />
+      <MessageCard
+        message={{ ...mockMessage, is_pinned: true }}
+        onLike={onLike}
+      />
     );
 
     const card = container.querySelector("[data-testid='message-card']");
-    const cls = card?.getAttribute("class") ?? "";
-    expect(cls).toContain("card-pinned");
-  });
-
-  it("should NOT apply pinned styling for non-pinned messages", () => {
-    const onLike = vi.fn();
-    const { container } = render(<MessageCard message={mockMessage} onLike={onLike} />);
-
-    const card = container.querySelector("[data-testid='message-card']");
-    const cls = card?.getAttribute("class") ?? "";
-    expect(cls).not.toContain("card-pinned");
+    expect(card?.getAttribute("class") ?? "").toContain("card-pinned");
   });
 
   it("should apply popular card styling for messages with many likes", () => {
-    const popularMessage = { ...mockMessage, likes: 15 };
     const onLike = vi.fn();
     const { container } = render(
-      <MessageCard message={popularMessage} onLike={onLike} />
+      <MessageCard message={{ ...mockMessage, likes: 15 }} onLike={onLike} />
     );
 
     const card = container.querySelector("[data-testid='message-card']");
-    const cls = card?.getAttribute("class") ?? "";
-    expect(cls).toContain("card-popular");
-    expect(screen.getByText("Popular")).toBeInTheDocument();
+    expect(card?.getAttribute("class") ?? "").toContain("card-popular");
+    expect(screen.getByText("较热")).toBeInTheDocument();
   });
 
-  it("should NOT apply popular styling for messages with few likes", () => {
+  it("should not apply popular styling for messages with few likes", () => {
     const onLike = vi.fn();
-    const { container } = render(<MessageCard message={mockMessage} onLike={onLike} />);
+    const { container } = render(
+      <MessageCard message={mockMessage} onLike={onLike} />
+    );
 
     const card = container.querySelector("[data-testid='message-card']");
-    const cls = card?.getAttribute("class") ?? "";
-    expect(cls).not.toContain("card-popular");
+    expect(card?.getAttribute("class") ?? "").not.toContain("card-popular");
   });
 });

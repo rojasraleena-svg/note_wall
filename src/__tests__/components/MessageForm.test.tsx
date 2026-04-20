@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import MessageForm from "@/components/MessageForm";
 
 describe("MessageForm", () => {
@@ -8,14 +8,14 @@ describe("MessageForm", () => {
     render(<MessageForm onSubmit={onSubmit} submitting={false} />);
 
     expect(screen.getByTestId("message-form")).toBeInTheDocument();
-    expect(screen.getByText("写下今天想留下的话")).toBeInTheDocument();
+    expect(screen.getByText("写一句")).toBeInTheDocument();
   });
 
   it("should expand form when clicked", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<MessageForm onSubmit={onSubmit} submitting={false} />);
 
-    fireEvent.click(screen.getByText("写下今天想留下的话"));
+    fireEvent.click(screen.getByText("写一句"));
 
     expect(screen.getByTestId("nickname-input")).toBeInTheDocument();
     expect(screen.getByTestId("content-input")).toBeInTheDocument();
@@ -26,7 +26,7 @@ describe("MessageForm", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<MessageForm onSubmit={onSubmit} submitting={false} />);
 
-    fireEvent.click(screen.getByText("写下今天想留下的话"));
+    fireEvent.click(screen.getByText("写一句"));
 
     const textarea = screen.getByTestId("content-input");
     fireEvent.change(textarea, { target: { value: "你好" } });
@@ -38,7 +38,7 @@ describe("MessageForm", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<MessageForm onSubmit={onSubmit} submitting={false} />);
 
-    fireEvent.click(screen.getByText("写下今天想留下的话"));
+    fireEvent.click(screen.getByText("写一句"));
 
     const submitButton = screen.getByTestId("submit-button");
     expect(submitButton).toBeDisabled();
@@ -48,7 +48,7 @@ describe("MessageForm", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<MessageForm onSubmit={onSubmit} submitting={false} />);
 
-    fireEvent.click(screen.getByText("写下今天想留下的话"));
+    fireEvent.click(screen.getByText("写一句"));
 
     const nicknameInput = screen.getByTestId("nickname-input");
     const contentInput = screen.getByTestId("content-input");
@@ -68,7 +68,7 @@ describe("MessageForm", () => {
     const onSubmit = vi.fn().mockRejectedValue(new Error("fail"));
     render(<MessageForm onSubmit={onSubmit} submitting={false} />);
 
-    fireEvent.click(screen.getByText("写下今天想留下的话"));
+    fireEvent.click(screen.getByText("写一句"));
 
     const contentInput = screen.getByTestId("content-input");
     fireEvent.change(contentInput, { target: { value: "测试" } });
@@ -87,21 +87,21 @@ describe("MessageForm", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<MessageForm onSubmit={onSubmit} submitting={false} />);
 
-    fireEvent.click(screen.getByText("写下今天想留下的话"));
+    fireEvent.click(screen.getByText("写一句"));
 
     const contentInput = screen.getByTestId("content-input");
     fireEvent.change(contentInput, { target: { value: "测试内容" } });
 
-    fireEvent.click(screen.getByText("取消"));
+    fireEvent.click(screen.getByText("收起"));
 
-    expect(screen.getByText("写下今天想留下的话")).toBeInTheDocument();
+    expect(screen.getByText("写一句")).toBeInTheDocument();
   });
 
   it("should create ripple effect on submit button click", async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<MessageForm onSubmit={onSubmit} submitting={false} />);
 
-    fireEvent.click(screen.getByText("写下今天想留下的话"));
+    fireEvent.click(screen.getByText("写一句"));
 
     const contentInput = screen.getByTestId("content-input");
     fireEvent.change(contentInput, { target: { value: "测试留言" } });
@@ -119,7 +119,7 @@ describe("MessageForm", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<MessageForm onSubmit={onSubmit} submitting={false} />);
 
-    fireEvent.click(screen.getByText("写下今天想留下的话"));
+    fireEvent.click(screen.getByText("写一句"));
 
     const textarea = screen.getByTestId("content-input");
     fireEvent.focus(textarea);
@@ -131,7 +131,7 @@ describe("MessageForm", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<MessageForm onSubmit={onSubmit} submitting={false} />);
 
-    fireEvent.click(screen.getByText("写下今天想留下的话"));
+    fireEvent.click(screen.getByText("写一句"));
 
     const textarea = screen.getByTestId("content-input");
     fireEvent.focus(textarea);

@@ -12,7 +12,7 @@ describe("Footer", () => {
 
   it("should display brand name with logo", () => {
     render(<Footer />);
-    expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByTestId("brand-logo")).toHaveLength(1);
     expect(screen.getByText(/留言墙/)).toBeInTheDocument();
   });
 

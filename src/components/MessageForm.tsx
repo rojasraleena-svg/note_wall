@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { useRipple } from "@/hooks/useRipple";
 
 interface MessageFormProps {
@@ -49,21 +49,21 @@ export default function MessageForm({
       className="note-form"
       data-testid="message-form"
     >
-      <div className="note-form-shell rounded-[1.8rem] p-5 transition-all duration-300">
+      <div className="note-form-shell rounded-[1.2rem] p-4 transition-all duration-300">
         <div
           className="flex cursor-pointer items-center gap-3"
           onClick={() => !expanded && setExpanded(true)}
         >
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[rgba(19,17,15,0.08)] bg-[rgba(19,17,15,0.04)] text-sm font-semibold text-[var(--color-ink)]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgba(19,17,15,0.08)] bg-[rgba(19,17,15,0.04)] text-sm font-semibold text-[var(--color-ink)]">
             {nickname.trim() ? nickname.trim()[0].toUpperCase() : "留"}
           </div>
           {!expanded ? (
             <div className="flex-1">
               <p className="text-sm font-medium text-[var(--color-ink)]">
-                写下今天想留下的话
+                写一句
               </p>
               <p className="mt-1 text-sm text-[var(--color-soft)]">
-                点击展开，匿名或署名都可以。
+                匿名也可以。
               </p>
             </div>
           ) : (
@@ -83,14 +83,14 @@ export default function MessageForm({
         </div>
 
         {expanded && (
-          <div className="mt-5 animate-fade-in-up">
+          <div className="mt-4 animate-fade-in-up">
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="写点什么吧，比如今天的心情、一个路过的念头，或者一句想留给陌生人的话。"
+              placeholder="写一句短句..."
               maxLength={500}
-              rows={5}
-              className={`note-textarea rounded-[1.4rem] border border-[rgba(19,17,15,0.08)] px-4 py-4 text-sm leading-7 ${
+              rows={4}
+              className={`note-textarea rounded-[1rem] border border-[rgba(19,17,15,0.08)] px-4 py-4 text-sm leading-7 ${
                 textareaFocused ? "focus-shine" : ""
               }`}
               data-testid="content-input"
@@ -127,7 +127,7 @@ export default function MessageForm({
                   }}
                   className="secondary-button rounded-full px-4 py-2 text-xs transition-colors"
                 >
-                  取消
+                  收起
                 </button>
                 <button
                   type="submit"
@@ -137,7 +137,7 @@ export default function MessageForm({
                   data-testid="submit-button"
                   onClick={onRipple}
                 >
-                  {submitting ? "发布中..." : "发布留言"}
+                  {submitting ? "发布中..." : "发布"}
                 </button>
               </div>
             </div>
