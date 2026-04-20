@@ -19,7 +19,7 @@ describe("HeroHeader", () => {
     render(<HeroHeader />);
     const subtitle = screen.getByTestId("hero-subtitle");
     expect(subtitle).toBeInTheDocument();
-    expect(subtitle).toHaveTextContent("先停一下，再进入留言本身。");
+    expect(subtitle).toHaveTextContent("匿名或署名，都能被看见。");
   });
 
   it("should show online status indicator", () => {
@@ -48,10 +48,10 @@ describe("HeroHeader", () => {
     );
   });
 
-  it("should render multiple showcase notes", () => {
+  it("should render archive showcase copy", () => {
     render(<HeroHeader />);
-    expect(screen.getByText("像被留下的纸条，不像弹窗。")).toBeInTheDocument();
-    expect(screen.getByText("匿名、署名、碎念，都能被看见。")).toBeInTheDocument();
+    expect(screen.getByText("今天路过，也能留下句子。")).toBeInTheDocument();
+    expect(screen.getByText("让一句话，", { exact: false })).toBeInTheDocument();
   });
 
   it("should scroll to notes wall when enter button is clicked", () => {
