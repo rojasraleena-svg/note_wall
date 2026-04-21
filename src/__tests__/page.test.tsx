@@ -2,10 +2,8 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import Home from "@/app/page";
 
-vi.mock("@/components/MessageWall", () => ({
-  default: function MockMessageWall() {
-    return <div data-testid="message-wall">MessageWall</div>;
-  },
+vi.mock("@/services/messageService", () => ({
+  fetchMessageCount: vi.fn().mockResolvedValue(12),
 }));
 
 describe("Home Page", () => {
@@ -27,13 +25,13 @@ describe("Home Page", () => {
     expect(main?.className).toContain("page-shell");
   });
 
-  it("should contain MessageWall component", () => {
+  it("should not render MessageWall content on the home page", () => {
     render(<Home />);
-    expect(screen.getByTestId("message-wall")).toBeInTheDocument();
+    expect(screen.queryByTestId("notes-wall")).not.toBeInTheDocument();
   });
 
-  it("should display online status indicator", () => {
+  it("should expose an entry to the standalone wall page", () => {
     render(<Home />);
-    expect(screen.getByTestId("online-status")).toBeInTheDocument();
+    expect(screen.getByTestId("enter-notes-button")).toHaveAttribute("href", "/wall");
   });
 });

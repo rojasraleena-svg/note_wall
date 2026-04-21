@@ -58,6 +58,14 @@ export async function createMessage(
   return data as Message;
 }
 
+export async function fetchMessageCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from("messages")
+    .select("*", { count: "exact", head: true });
+  if (error) throw error;
+  return count ?? 0;
+}
+
 export async function incrementLikes(messageId: string): Promise<number> {
   const { data, error } = await supabase.rpc("increment_likes", {
     message_id: messageId,

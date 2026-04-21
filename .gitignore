@@ -13,6 +13,9 @@ PROFILE*
 .npm-temp-cache/
 .next-dev.log
 .playwright-cli/
+.playwright-mcp/
+playwright-report/
+test-results/
 
 # production
 /build

@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { Message } from "@/types/message";
 import {
@@ -10,7 +11,11 @@ import {
 import MessageCard from "./MessageCard";
 import MessageForm from "./MessageForm";
 
-export default function MessageWall() {
+interface MessageWallProps {
+  headerAction?: ReactNode;
+}
+
+export default function MessageWall({ headerAction }: MessageWallProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -86,42 +91,38 @@ export default function MessageWall() {
 
   return (
     <section className="notes-layout" id="notes-wall" data-testid="notes-wall">
-      <aside className="notes-rail">
-        <div className="notes-panel rounded-[1.75rem]">
-          <div className="eyebrow">Leave a note</div>
-          <h2 className="notes-title display-font">写一句，留一句。</h2>
-          <p className="section-copy">把一句心情留在这里。</p>
-
-          <div className="stats-strip">
-            <div className="stat-chip">
-              <strong>{total}</strong>
-              <span>公开留言</span>
-            </div>
-            <div className="stat-chip">
-              <strong>{highlightedLikes}</strong>
-              <span>最高点赞</span>
-            </div>
-          </div>
-
-          <MessageForm onSubmit={handleSubmit} submitting={submitting} />
-
+      {/* Header row: title + stats + form */}
+      <div className="notes-header">
+        <div className="notes-header-left">
+          <div className="feed-kicker">Archive</div>
+          <h2 className="feed-title display-font">最新留言</h2>
+          <p className="feed-subtitle">置顶在前，其余按时间展开。</p>
           {actionError && (
-            <p className="mt-4 text-sm text-[var(--color-accent)]">
-              {actionError}
-            </p>
+            <p className="mt-2 text-sm text-[var(--color-accent)]">{actionError}</p>
           )}
         </div>
-      </aside>
 
-      <div className="feed-stage">
-        <div className="feed-head">
-          <div>
-            <div className="feed-kicker">Archive</div>
-            <h3 className="feed-title display-font">最新留言</h3>
-            <p className="feed-subtitle">置顶在前，其余按时间展开。</p>
+        <div className="notes-header-right">
+          {/* Inline stats */}
+          <div className="feed-stats">
+            <span className="feed-stat">
+              <strong>{total}</strong> 条
+            </span>
+            <span className="feed-stat-divider" />
+            <span className="feed-stat">
+              <strong>{highlightedLikes}</strong> 赞
+            </span>
           </div>
-        </div>
 
+          {/* Compact form — lives in header */}
+          <MessageForm onSubmit={handleSubmit} submitting={submitting} />
+
+          {headerAction}
+        </div>
+      </div>
+
+      {/* Card grid */}
+      <div className="feed-stage">
         {loading && page === 1 ? (
           <div className="loading-state">
             <div className="loading-spinner" />
@@ -162,7 +163,7 @@ export default function MessageWall() {
             </div>
 
             {hasMore && (
-              <div className="mt-8 text-center">
+              <div className="mt-10 text-center">
                 <button
                   onClick={() => setPage((prev) => prev + 1)}
                   disabled={loading}

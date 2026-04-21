@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import HeroHeader from "@/components/HeroHeader";
+
+vi.mock("@/services/messageService", () => ({
+  fetchMessageCount: vi.fn().mockResolvedValue(12),
+}));
 
 describe("HeroHeader", () => {
   it("should render the brand logo", () => {
@@ -10,9 +14,7 @@ describe("HeroHeader", () => {
 
   it("should display the main title '留言墙'", () => {
     render(<HeroHeader />);
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "留言墙"
-    );
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("留言墙");
   });
 
   it("should display a subtitle/description", () => {
@@ -22,11 +24,9 @@ describe("HeroHeader", () => {
     expect(subtitle).toHaveTextContent("匿名或署名，都能被看见。");
   });
 
-  it("should show online status indicator", () => {
+  it("should show live stats row with message count", () => {
     render(<HeroHeader />);
-    const statusBadge = screen.getByTestId("online-status");
-    expect(statusBadge).toBeInTheDocument();
-    expect(statusBadge).toHaveTextContent(/online/i);
+    expect(screen.getByText("条留言")).toBeInTheDocument();
   });
 
   it("should have decorative background elements", () => {
@@ -43,30 +43,17 @@ describe("HeroHeader", () => {
 
   it("should render enter button for notes wall", () => {
     render(<HeroHeader />);
-    expect(screen.getByTestId("enter-notes-button")).toHaveTextContent(
-      "进入留言墙"
-    );
+    expect(screen.getByTestId("enter-notes-button")).toHaveTextContent("进入留言墙");
   });
 
   it("should render archive showcase copy", () => {
     render(<HeroHeader />);
-    expect(screen.getByText("今天路过，也能留下句子。")).toBeInTheDocument();
-    expect(screen.getByText("让一句话，", { exact: false })).toBeInTheDocument();
+    expect(screen.getByText("— 今天路过，也能留下句子。")).toBeInTheDocument();
+    expect(screen.getByText("让一句话，被轻轻贴上去。")).toBeInTheDocument();
   });
 
-  it("should scroll to notes wall when enter button is clicked", () => {
-    const scrollIntoView = vi.fn();
-    const originalGetElementById = document.getElementById.bind(document);
-    vi.spyOn(document, "getElementById").mockImplementation((id: string) => {
-      if (id === "notes-wall") {
-        return { scrollIntoView } as unknown as HTMLElement;
-      }
-      return originalGetElementById(id);
-    });
-
+  it("should link to the standalone wall page", () => {
     render(<HeroHeader />);
-    fireEvent.click(screen.getByTestId("enter-notes-button"));
-
-    expect(scrollIntoView).toHaveBeenCalled();
+    expect(screen.getByTestId("enter-notes-button")).toHaveAttribute("href", "/wall");
   });
 });

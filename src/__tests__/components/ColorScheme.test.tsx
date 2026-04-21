@@ -1,11 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import Home from "@/app/page";
 
-vi.mock("@/components/MessageWall", () => ({
-  default: function MockMessageWall() {
-    return <div data-testid="message-wall">MessageWall</div>;
-  },
+vi.mock("@/services/messageService", () => ({
+  fetchMessageCount: vi.fn().mockResolvedValue(12),
 }));
 
 describe("Color Scheme", () => {

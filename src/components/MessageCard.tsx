@@ -9,9 +9,12 @@ interface MessageCardProps {
   index?: number;
 }
 
+const ROTATIONS = [-1.2, 0.8, -0.6, 1.0, -0.9, 0.5, -1.1, 0.7];
+
 export default function MessageCard({
   message,
   onLike,
+  index = 0,
 }: MessageCardProps) {
   const [liked, setLiked] = useState(false);
   const [heartbeat, setHeartbeat] = useState(false);
@@ -22,7 +25,6 @@ export default function MessageCard({
     const likedKey = `liked_${message.id}`;
     const storedLiked = localStorage.getItem(likedKey) === "true";
 
-    // Guard against stale local state such as old failed likes or reset data.
     if (storedLiked && message.likes === 0) {
       localStorage.removeItem(likedKey);
       setLiked(false);
@@ -52,68 +54,54 @@ export default function MessageCard({
     });
   };
 
-  const isPopular = message.likes >= 10;
-
-  const cardClasses = [
-    "note-card",
-    "rounded-[1.2rem]",
-    "animate-fade-in-up",
-    message.is_pinned ? "card-pinned" : "",
-    isPopular ? "card-popular" : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const rotation = ROTATIONS[index % ROTATIONS.length];
+  const isPinned = message.is_pinned;
+  const animDelay = Math.min(index, 8) * 0.06;
 
   return (
-    <article className={cardClasses} data-testid="message-card">
-      <div className="note-card-inner">
-        <div className="note-card-top">
-          <div className="note-card-profile">
-            <img
-              src={avatarUrl}
-              alt={message.nickname}
-              className="h-10 w-10 rounded-full border border-[rgba(19,17,15,0.08)] bg-[rgba(255,255,255,0.5)]"
-            />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-[var(--color-ink)]">
-                {message.nickname}
-              </p>
-              <p className="text-xs text-[var(--color-soft)]">
-                {formatDate(message.created_at)}
-              </p>
-            </div>
-          </div>
-          <div className="flex shrink-0 flex-col items-end gap-2">
-            {message.is_pinned && (
-              <span className="note-badge note-badge-accent">置顶</span>
-            )}
-            {isPopular && <span className="note-badge">较热</span>}
-          </div>
+    <article
+      className={`note-card ${isPinned ? "note-card--pinned" : ""}`}
+      style={{
+        transform: `rotate(${rotation}deg)`,
+        animationDelay: `${animDelay}s`,
+      }}
+      data-testid="message-card"
+    >
+      {/* Pinned indicator */}
+      {isPinned && (
+        <span className="note-card-pin" aria-label="置顶">
+          📌
+        </span>
+      )}
+
+      {/* Main content — the star */}
+      <p className="note-card-text">{message.content}</p>
+
+      {/* Bottom meta row */}
+      <div className="note-card-meta">
+        <div className="note-card-author">
+          <img
+            src={avatarUrl}
+            alt=""
+            className="note-card-avatar"
+            loading="lazy"
+          />
+          <span className="note-card-name">{message.nickname}</span>
+          <span className="note-card-time">{formatDate(message.created_at)}</span>
         </div>
 
-        <p className="note-card-body">{message.content}</p>
-
-        <div className="note-card-footer">
-          <span className="note-card-label">公开留言</span>
-          <button
-            onClick={handleLike}
-            disabled={liked}
-            className={`like-btn note-like-button ${
-              liked
-                ? "bg-[rgba(211,93,49,0.08)] text-[var(--color-accent)]"
-                : "text-[var(--color-soft)] hover:bg-[rgba(19,17,15,0.05)] hover:text-[var(--color-ink)]"
-            }`}
-            data-testid="like-button"
-            aria-label={liked ? "已点赞" : "点赞"}
-          >
-            <span className={`${heartbeat ? "animate-like-heartbeat" : ""}`}>
-              {liked ? "♥" : "♡"}
-            </span>
-            <span className="text-xs font-semibold" data-testid="like-count">
-              {message.likes}
-            </span>
-          </button>
-        </div>
+        <button
+          onClick={handleLike}
+          disabled={liked}
+          className={`note-card-like ${liked ? "note-card-like--active" : ""}`}
+          data-testid="like-button"
+          aria-label={liked ? "已点赞" : "点赞"}
+        >
+          <span className={heartbeat ? "animate-like-heartbeat" : ""}>
+            {liked ? "♥" : "♡"}
+          </span>
+          <span data-testid="like-count">{message.likes}</span>
+        </button>
       </div>
     </article>
   );

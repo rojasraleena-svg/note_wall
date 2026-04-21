@@ -1,10 +1,14 @@
 import BrandLogo from "./BrandLogo";
 
-export default function Footer() {
+interface FooterProps {
+  className?: string;
+}
+
+export default function Footer({ className = "" }: FooterProps) {
   return (
     <footer
       data-testid="site-footer"
-      className="section-shell mt-10 pb-10 animate-fade-in-up-delay-2"
+      className={`section-shell mt-10 pb-10 animate-fade-in-up-delay-2 ${className}`.trim()}
     >
       <div
         data-testid="footer-decor"
